@@ -1,0 +1,14 @@
+/.gradle/
+/.idea/
+*.iml
+/app/build/
+/build/
+/gradle/
+gradlew
+gradlew.bat
+local.properties
+/moduleAppdelegate/build/
+/moduleDemo/build/
+/moduleRefresh/build/
+/moduleScrollPicture/build/
+/moduleSyncInterface/build/
