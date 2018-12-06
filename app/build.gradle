@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.mob.sdk'
 
 android {
 
@@ -27,6 +28,11 @@ android {
 
 }
 
+MobSDK {
+    appKey "moba6b6c6d6"
+    appSecret "b89d2427a3bc7ad1aea1e1e8c1d36bf3"
+}
+
 repositories{
     flatDir{
         dirs 'libs'
@@ -36,11 +42,8 @@ repositories{
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:support-v4:24.0.0'
-    compile 'com.android.support:multidex:1.0.1'
-    //5个模块
-    compile project(':moduleDemo')
-    compile project(':moduleScrollPicture')
-    compile project(':moduleSyncInterface')
-    compile project(':moduleRefresh')
-    compile project(':moduleAppdelegate')
+//    compile 'com.android.support:multidex:1.0.1'
+    //引用模块
+    compile project(':moduleSMSSDK')
+    compile project(':moduleAppDelegate')
 }
