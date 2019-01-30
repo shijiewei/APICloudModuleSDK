@@ -24,15 +24,15 @@
 	    	moduleSMSSDK = api.require('moduleSMSSDK');
 	    }
 	    
-		function requestVerification(){
+		function getTextCode(){
 		    var country = document.getElementById("country").value;
 		    var phone = document.getElementById("phone").value;
 		    var tempCode = document.getElementById("tempCode").value;
 		    // param中的key命名不能改变
-			var param = {country:country, phone:phone, tempCode:tempCode};
-	        moduleSMSSDK.getVerificationCode(param, function(ret, err){
+			var param = {zone:country, phoneNumber:phone, tempCode:tempCode};
+	        moduleSMSSDK.getTextCode(param, function(ret, err){
 	            if (err !== null && err !== undefined && err !== '') {
-	                // 错误消息示例：{"httpStatus":400,"error":"Template not exist.","status":484}
+	                // 错误消息示例：{"msg":"Template not exist.","code":484}
 	                alert(eTitle + JSON.stringify(err));
 	            } else {
 	                // 正常消息示例：{"smart":false}
@@ -41,14 +41,14 @@
 	        });
 		}
 
-		function requestVoiceVerification(){
+		function getVoiceCode(){
 		    var country = document.getElementById("country").value;
 		    var phone = document.getElementById("phone").value;
 		    // param中的key命名不能改变
-			var param = {country:country, phone:phone};
-	        moduleSMSSDK.getVoiceVerifyCode(param, function(ret, err){
+			var param = {zone:country, phoneNumber:phone};
+	        moduleSMSSDK.getVoiceCode(param, function(ret, err){
 	            if (err !== null && err !== undefined && err !== '') {
-	                // 错误消息示例：{"httpStatus":400,"error":"Template not exist.","status":484}
+	                // 错误消息示例：{"msg":"Template not exist.","code":484}
 	                alert(eTitle + JSON.stringify(err));
 	            } else {
 	                // 正常消息示例：{}
@@ -57,18 +57,30 @@
 	        });
 		}
 
-		function submitVerification(){
+		function commitCode(){
 		    var country = document.getElementById("country").value;
 		    var phone = document.getElementById("phone").value;
 		    var code = document.getElementById("code").value;
 		    // param中的key命名不能改变
-			var param = {country:country, phone:phone, code:code};
-	        moduleSMSSDK.submitVerificationCode(param, function(ret, err){
+			var param = {zone:country, phoneNumber:phone, code:code};
+	        moduleSMSSDK.commitCode(param, function(ret, err){
 	            if (err !== null && err !== undefined && err !== '') {
-	                // 错误消息示例：{"httpStatus":400,"error":"Template not exist.","status":484}
+	                // 错误消息示例：{"msg":"Template not exist.","code":484}
 	                alert(eTitle + JSON.stringify(err));
 	            } else {
 	                // 正常消息示例：{country=86, phone=13362206853}
+	        	    alert(sTitle + JSON.stringify(ret));
+	        	}
+	        });
+		}
+
+		function getSupportedCountries(){
+	        moduleSMSSDK.getSupportedCountries(function(ret, err){
+	            if (err !== null && err !== undefined && err !== '') {
+	                // 错误消息示例：{"msg":"Template not exist.","code":484}
+	                alert(eTitle + JSON.stringify(err));
+	            } else {
+	                // 正常消息示例：{"countries":[{zone=590, rule=^\d+}, {zone=680, rule=^\d+}]}
 	        	    alert(sTitle + JSON.stringify(ret));
 	        	}
 	        });
@@ -88,15 +100,15 @@
                 <lable>模板编号（没有则不填）：</lable><br>
                 <input type="number" id="tempCode" /><br>
             <div class='itemtitle'>1、文本验证码</div>
-                <div class="clickbtn" tapmode="active" onclick="requestVerification()" >请求文本验证码</div>
+                <div class="clickbtn" tapmode="active" onclick="getTextCode()" >请求文本验证码</div>
             <div class='itemtitle'>2、语音验证码</div>
-                <div class="clickbtn" tapmode="active" onclick="requestVoiceVerification()" >请求语音验证码</div>
+                <div class="clickbtn" tapmode="active" onclick="getVoiceCode()" >请求语音验证码</div>
             <div class='itemtitle'>3、提交验证码</div>
                 <lable>验证码：</lable><br>
                 <input type="number" id="code" />
-                <div class="clickbtn" tapmode="active" onclick="submitVerification()" >提交验证码</div>
-            <div class='itemtitle'>2、通讯录</div>
-                <div class="clickbtn" tapmode="active" onclick="requestNewFriends()" >获取新增好友数</div>
+                <div class="clickbtn" tapmode="active" onclick="commitCode()" >提交验证码</div>
+            <div class='itemtitle'>4、获取国家列表</div>
+                <div class="clickbtn" tapmode="active" onclick="getSupportedCountries()" >获取国家列表</div>
 			<br>
 		</div>
 	</div>
