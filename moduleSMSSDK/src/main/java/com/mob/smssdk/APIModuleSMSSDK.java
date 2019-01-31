@@ -1,5 +1,7 @@
 package com.mob.smssdk;
 
+import android.text.TextUtils;
+
 import com.mob.smssdk.util.SMSSDKLog;
 import com.mob.tools.utils.Hashon;
 import com.uzmap.pkg.uzcore.UZWebView;
@@ -14,6 +16,7 @@ import java.util.HashMap;
 
 import cn.smssdk.EventHandler;
 import cn.smssdk.SMSSDK;
+import cn.smssdk.utils.SPHelper;
 
 public class APIModuleSMSSDK extends UZModule {
 	private static final String KEY_CODE = "code";
@@ -323,17 +326,91 @@ public class APIModuleSMSSDK extends UZModule {
 		SMSSDK.getFriendsInApp();
 	}
 
+	public void jsmethod_submitUserInfo(final UZModuleContext moduleContext){
+		SMSSDKLog.d("jsmethod_submitUserInfo()");
+		// 注册监听器
+		EventHandler callback = new EventHandler() {
+			@Override
+			public void afterEvent(final int event, final int result, final Object data) {
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						if (result == SMSSDK.RESULT_COMPLETE) {
+							if (event == SMSSDK.EVENT_SUBMIT_USER_INFO) {
+								// callback onSuccess
+								// data示例：{}
+								throwSuccess(moduleContext, null);
+							}
+						} else {
+							if (event == SMSSDK.EVENT_SUBMIT_USER_INFO) {
+								// callback onError
+								if (data instanceof Throwable) {
+									Throwable throwable = (Throwable) data;
+									String msg = throwable.getMessage();
+									throwSdkError(moduleContext, msg);
+								} else {
+									String msg = "Sdk returned 'RESULT_ERROR', but the data is NOT an instance of Throwable";
+									SMSSDKLog.e("jsmethod_submitUserInfo() internal error: " + msg);
+									throwInternalError(moduleContext, msg);
+								}
+							}
+						}
+					}
+				});
+			}
+		};
+		SMSSDK.registerEventHandler(callback);
+
+		// 调用接口
+		String zone = moduleContext.optString("zone");
+		String phoneNumber = moduleContext.optString("phoneNumber");
+		String uid = moduleContext.optString("uid");
+		String nickname = moduleContext.optString("nickname");
+		String avatar = moduleContext.optString("avatar");
+
+		SMSSDKLog.d("zone: " + zone);
+		SMSSDKLog.d("phoneNumber: " + phoneNumber);
+		SMSSDKLog.d("uid: " + uid);
+		SMSSDKLog.d("nickname: " + nickname);
+		SMSSDKLog.d("avatar: " + avatar);
+		SMSSDK.submitUserInfo(uid, nickname, avatar, zone, phoneNumber);
+	}
+
+	public void jsmethod_getVersion(final UZModuleContext moduleContext){
+		SMSSDKLog.d("jsmethod_getVersion()");
+		// 调用接口
+		String version = SMSSDK.getVersion();
+		JSONObject res = new JSONObject();
+		try {
+			res.put("version", version);
+			throwSuccess(moduleContext, res);
+		} catch (JSONException e) {
+			SMSSDKLog.e("jsmethod_getVersion() internal error. msg= " + e.getMessage(), e);
+			throwInternalError(moduleContext, "Generate JSONObject error");
+		}
+	}
+
+	public void jsmethod_enableWarn(final UZModuleContext moduleContext){
+		SMSSDKLog.d("jsmethod_enableWarn()");
+		// 调用接口
+		Boolean isWarn = moduleContext.optBoolean("isWarn");
+		SMSSDKLog.d("isWarn: " + isWarn);
+		SPHelper.getInstance().setWarnWhenReadContact(isWarn);
+	}
+
 	private void throwSuccess(UZModuleContext moduleContext, JSONObject res) {
 		moduleContext.success(res, true);
 	}
 
 	private void throwSdkError(UZModuleContext moduleContext, String error) {
 		try {
-			JSONObject resp = new JSONObject(error);
-			int code = resp.optInt("status");
-			String msg = resp.optString("error");
-			resp.remove("status");
-			resp.remove("error");
+			JSONObject errorJson = new JSONObject(error);
+			int code = errorJson.optInt("status");
+			String msg = errorJson.optString("detail");
+			if (TextUtils.isEmpty(msg)) {
+				msg = errorJson.optString("error");
+			}
+			JSONObject resp = new JSONObject();
 			resp.put(KEY_CODE, code);
 			resp.put(KEY_MSG, msg);
 			moduleContext.error(null, resp, true);

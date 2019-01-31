@@ -98,6 +98,43 @@
 	        });
 		}
 
+        function submitUserInfo(){
+		    var country = document.getElementById("country").value;
+		    var phone = document.getElementById("phone").value;
+		    var uid = "3241241";
+		    var nickname = "SmsSDK_Api_Cloud_User_" + uid;
+		    var avatar = "http://download.sdk.mob.com/510/deb/0c0731ac543eb71311c482a2e2.png";
+		    // param中的key命名不能改变
+			var param = {uid:uid, nickname:nickname, avatar:avatar, phoneNumber:phone, zone:country};
+	        moduleSMSSDK.submitUserInfo(param, function(ret, err){
+	            if (err !== null && err !== undefined && err !== '') {
+	                // 错误消息示例：{"msg":"Template not exist.","code":484}
+	                alert(eTitle + JSON.stringify(err));
+	            } else {
+	                // 正常消息示例：{country=86, phone=13362206853}
+	        	    alert(sTitle + JSON.stringify(ret));
+	        	}
+	        });
+		}
+
+        function getVersion(){
+	        moduleSMSSDK.getVersion(function(ret, err){
+	            if (err !== null && err !== undefined && err !== '') {
+	                // 错误消息示例：{"msg":"Template not exist.","code":484}
+	                alert(eTitle + JSON.stringify(err));
+	            } else {
+	                // 正常消息示例：{"countries":[{zone=590, rule=^\d+}, {zone=680, rule=^\d+}]}
+	        	    alert(sTitle + JSON.stringify(ret));
+	        	}
+	        });
+		}
+
+		function enableWarn(){
+		    var isWarn = true;
+		    // param中的key命名不能改变
+			var param = {isWarn:isWarn};
+	        moduleSMSSDK.enableWarn(param);
+		}
 	</script>
 </head>
 <body>
@@ -123,6 +160,12 @@
                 <div class="clickbtn" tapmode="active" onclick="getSupportedCountries()" >获取国家列表</div>
             <div class='itemtitle'>5、获取应用内好友</div>
             <div class="clickbtn" tapmode="active" onclick="getFriends()" >获取应用内好友</div>
+            <div class='itemtitle'>6、提交用户信息</div>
+            <div class="clickbtn" tapmode="active" onclick="submitUserInfo()" >提交用户信息</div>
+            <div class='itemtitle'>7、获取版本号</div>
+            <div class="clickbtn" tapmode="active" onclick="getVersion()" >获取版本号</div>
+            <div class='itemtitle'>8、开启提示框</div>
+            <div class="clickbtn" tapmode="active" onclick="enableWarn()" >开启提示框</div>
 			<br>
 		</div>
 	</div>
