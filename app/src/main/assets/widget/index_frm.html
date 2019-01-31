@@ -86,6 +86,18 @@
 	        });
 		}
 
+		function getFriends(){
+	        moduleSMSSDK.getFriends(function(ret, err){
+	            if (err !== null && err !== undefined && err !== '') {
+	                // 错误消息示例：{"msg":"Template not exist.","code":484}
+	                alert(eTitle + JSON.stringify(err));
+	            } else {
+	                // 正常消息示例：{"countries":[{zone=590, rule=^\d+}, {zone=680, rule=^\d+}]}
+	        	    alert(sTitle + JSON.stringify(ret));
+	        	}
+	        });
+		}
+
 	</script>
 </head>
 <body>
@@ -109,6 +121,8 @@
                 <div class="clickbtn" tapmode="active" onclick="commitCode()" >提交验证码</div>
             <div class='itemtitle'>4、获取国家列表</div>
                 <div class="clickbtn" tapmode="active" onclick="getSupportedCountries()" >获取国家列表</div>
+            <div class='itemtitle'>5、获取应用内好友</div>
+            <div class="clickbtn" tapmode="active" onclick="getFriends()" >获取应用内好友</div>
 			<br>
 		</div>
 	</div>

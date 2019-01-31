@@ -278,6 +278,51 @@ public class APIModuleSMSSDK extends UZModule {
 		SMSSDK.getSupportedCountries();
 	}
 
+	public void jsmethod_getFriends(final UZModuleContext moduleContext){
+		SMSSDKLog.d("jsmethod_getFriends()");
+		// 注册监听器
+		EventHandler callback = new EventHandler() {
+			@Override
+			public void afterEvent(final int event, final int result, final Object data) {
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						if (result == SMSSDK.RESULT_COMPLETE) {
+							if (event == SMSSDK.EVENT_GET_FRIENDS_IN_APP) {
+								// callback onSuccess
+								/* data示例：[{uid=1155310877, phone=17301652905, nickname=SmsSDK_User_1155310877,
+								 *     avatar=http://img1.touxiang.cn/uploads/20121224/24-054837_708.jpg, isnew=true}]
+								 */
+								ArrayList<HashMap<String, Object>> list = (ArrayList<HashMap<String, Object>>)data;
+								HashMap<String, Object> map = new HashMap<String, Object>();
+								map.put("friends", list);
+								JSONObject res = new JSONObject(map);
+								throwSuccess(moduleContext, res);
+							}
+						} else {
+							if (event == SMSSDK.EVENT_GET_FRIENDS_IN_APP) {
+								// callback onError
+								if (data instanceof Throwable) {
+									Throwable throwable = (Throwable) data;
+									String msg = throwable.getMessage();
+									throwSdkError(moduleContext, msg);
+								} else {
+									String msg = "Sdk returned 'RESULT_ERROR', but the data is NOT an instance of Throwable";
+									SMSSDKLog.e("jsmethod_getFriends() internal error: " + msg);
+									throwInternalError(moduleContext, msg);
+								}
+							}
+						}
+					}
+				});
+			}
+		};
+		SMSSDK.registerEventHandler(callback);
+
+		// 调用接口
+		SMSSDK.getFriendsInApp();
+	}
+
 	private void throwSuccess(UZModuleContext moduleContext, JSONObject res) {
 		moduleContext.success(res, true);
 	}
