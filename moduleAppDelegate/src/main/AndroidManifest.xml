@@ -1,2 +1,4 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-		  package="com.mob.smssdk.appdelegate"/>
+		  package="com.mob.smssdk.appdelegate">
+	<application android:name="com.uzmap.pkg.uzapp.UZApplication"/>
+</manifest>
